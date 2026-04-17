@@ -1,16 +1,83 @@
-# React + Vite
+# Civic Seva - Admin Dashboard 💻
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The administrative control center for the Civic Seva platform. Built with React and Vite, this dashboard provides city officials with real-time insights and issue management capabilities.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **📊 Management Dashboard**: Live summary of open reports, resolved cases, and critical issues.
+- **🗺️ Hotspot Monitor**: Interactive heatmap visualization using Mapbox to identify high-density problem areas.
+- **🗂️ Complaint Queue**: Systematic view of all citizen reports with detailed modal views for every issue.
+- **🤝 Department Routing**: Automatic categorization and progress tracking for different municipal departments (Roads, Sanitation, Electricity, etc.).
+- **🔒 Secure Login**: Google Authentication integrated via Firebase for authorized personnel access.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Framework**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Backend SDK**: [Firebase JS SDK](https://firebase.google.com/docs/web/setup) (Auth, Firestore)
+- **Maps**: [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js) for heatmaps
+- **Routing**: [React Router](https://reactrouter.com/)
+- **Styling**: Modern Vanilla CSS3 with flex/grid layouts
+
+---
+
+## 🏗️ Folder Structure
+
+```text
+src/
+├── components/    # Reusable UI components (Heatmap, Modal, Card)
+├── hooks/         # Custom React hooks (useReports)
+├── lib/           # Configuration files (Firebase, Mapbox)
+├── assets/        # Project logos and background images
+├── App.jsx        # Root application logic and routing
+└── main.jsx       # Entry point
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+1. Install [Node.js](https://nodejs.org/) (v18+ recommended).
+2. Set up a **Firebase Web App** and enable:
+   - Google Sign-in
+   - Cloud Firestore (with appropriate Security Rules)
+3. Obtain a **Mapbox Public Access Token**.
+
+### Installation
+
+1. **Clone the repo** (if not already done):
+   ```bash
+   git clone https://github.com/Kachuaofficial/Civic-Seva.git
+   cd Civic-Seva/civic-seva-admin
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**:
+   Create a `.env` file in the root directory and add your credentials:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+   ```
+
+4. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
