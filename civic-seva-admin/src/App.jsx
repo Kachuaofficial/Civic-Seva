@@ -11,6 +11,7 @@ import IssueHeatmap from "./components/IssueHeatmap";
 import civicSevaLogo from "./assets/civic-seva-logo.jpeg";
 import { useReports } from "./hooks/useReports";
 import { auth, googleProvider, hasPlaceholderValue, isFirebaseConfigured } from "./lib/firebase";
+import { updateReportStatus } from "./lib/reportActions";
 import "./App.css";
 
 
@@ -91,7 +92,11 @@ function ComplaintCard({ item, onOpen }) {
   );
 }
 
-function ComplaintDetailsModal({ complaint, onClose }) {
+function ComplaintDetailsModal({ complaint, onClose, user }) {
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [statusError, setStatusError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+
   useEffect(() => {
     if (!complaint) {
       return undefined;
@@ -111,6 +116,30 @@ function ComplaintDetailsModal({ complaint, onClose }) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [complaint, onClose]);
+
+  const handleStatusUpdate = async (newStatus) => {
+    setUpdatingStatus(true);
+    setStatusError("");
+    setStatusMessage("");
+
+    try {
+      const adminInfo = {
+        email: user?.email || "admin",
+        displayName: user?.displayName || "Admin User",
+      };
+
+      await updateReportStatus(complaint.id, newStatus, adminInfo);
+      setStatusMessage(`Status updated to "${newStatus}" and notification sent to user.`);
+
+      // Clear message after 3 seconds
+      setTimeout(() => setStatusMessage(""), 3000);
+    } catch (error) {
+      console.error("Error updating status:", error);
+      setStatusError(`Failed to update status: ${error.message}`);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   if (!complaint) {
     return null;
@@ -171,6 +200,45 @@ function ComplaintDetailsModal({ complaint, onClose }) {
             <span>Submitted At</span>
             <strong>{complaint.submittedAt}</strong>
           </div>
+        </div>
+
+        {statusMessage && (
+          <div className="status-message success">
+            ✓ {statusMessage}
+          </div>
+        )}
+
+        {statusError && (
+          <div className="status-message error">
+            ✗ {statusError}
+          </div>
+        )}
+
+        <div className="complaint-actions">
+          <button
+            className="action-btn action-btn-pending"
+            type="button"
+            onClick={() => handleStatusUpdate("pending")}
+            disabled={updatingStatus || complaint.status === "pending"}
+          >
+            {updatingStatus ? "Updating..." : "Mark as Pending"}
+          </button>
+          <button
+            className="action-btn action-btn-progress"
+            type="button"
+            onClick={() => handleStatusUpdate("in-progress")}
+            disabled={updatingStatus || complaint.status === "in-progress"}
+          >
+            {updatingStatus ? "Updating..." : "In Progress"}
+          </button>
+          <button
+            className="action-btn action-btn-solved"
+            type="button"
+            onClick={() => handleStatusUpdate("fixed")}
+            disabled={updatingStatus || complaint.status === "fixed"}
+          >
+            {updatingStatus ? "Updating..." : "Mark as Fixed"}
+          </button>
         </div>
       </div>
     </div>
@@ -406,10 +474,6 @@ function DashboardPage({ onOpenComplaint, user, onSignOut, reports }) {
               Built around your problem statement: citizen reports, location-led visibility, area-based
               filtering, and fast department assignment.
             </p>
-          </div>
-
-          <div className="hero-actions">
-            <button className="primary-btn">View live complaints</button>
           </div>
         </section>
 
@@ -685,7 +749,7 @@ function App() {
           element={<ComplaintsPage onOpenComplaint={setSelectedComplaint} reports={reports} />}
         />
       </Routes>
-      <ComplaintDetailsModal complaint={selectedComplaint} onClose={() => setSelectedComplaint(null)} />
+      <ComplaintDetailsModal complaint={selectedComplaint} onClose={() => setSelectedComplaint(null)} user={user} />
     </BrowserRouter>
   );
 }
